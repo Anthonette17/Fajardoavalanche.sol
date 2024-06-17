@@ -1,0 +1,64 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract CustomToken is ERC20, Ownable {
+
+    mapping(uint256 => uint256) public productPrices;
+    mapping(address => uint256) public userPurchases;
+
+    constructor() ERC20("CustomToken", "CTK") Ownable(msg.sender) {
+        productPrices[101] = 500;
+        productPrices[102] = 300;
+        productPrices[103] = 200;
+        productPrices[104] = 100;
+    }
+
+    function mintTokens(address recipient, uint256 amount) public onlyOwner {
+        _mint(recipient, amount);
+    }
+
+    function transferTokens(address recipient, uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "Transfer Failed: Insufficient balance.");
+        approve(msg.sender, amount);
+        transferFrom(msg.sender, recipient, amount);
+    }
+
+    function displayProducts() external pure returns (string memory) {
+        string memory saleOptions = "Available products: {101} Laptop (500) {102} Smartphone (300) {103} Headphones (200) {104} Charger (100)";
+        return saleOptions;
+    }
+
+    function purchaseProduct(uint256 productId) public {
+        require(productPrices[productId] > 0, "Product is not available.");
+        require(productId <= 104, "Product is not available.");
+        require(balanceOf(msg.sender) >= productPrices[productId], "Purchase Failed: Insufficient balance.");
+        
+        userPurchases[msg.sender] = productId;
+        transfer(owner(), productPrices[productId]);
+    }
+
+    function redeemProduct() public {
+        uint256 productId = userPurchases[msg.sender];
+        require(productId > 0, "No product to redeem.");
+        require(productPrices[productId] > 0, "Product is not available.");
+        transferFrom(owner(), msg.sender, productPrices[productId]);
+        delete userPurchases[msg.sender];
+    }
+
+    function burnTokens(uint256 amount) public {
+        require(balanceOf(msg.sender) >= amount, "Burn Failed: Insufficient balance.");
+        approve(msg.sender, amount);
+        _burn(msg.sender, amount);
+    }
+
+    function getBalance() external view returns (uint256) {
+        return balanceOf(msg.sender);
+    }
+
+    function decimals() override public pure returns (uint8) {
+        return 0;
+    }
+}
