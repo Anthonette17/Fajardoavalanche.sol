@@ -4,12 +4,12 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract CustomToken is ERC20, Ownable {
+contract TokenGames is ERC20, Ownable {
 
     mapping(uint256 => uint256) public productPrices;
     mapping(address => uint256) public userPurchases;
 
-    constructor() ERC20("CustomToken", "CTK") Ownable(msg.sender) {
+    constructor() ERC20("TokenGames", "TKG") Ownable(msg.sender) {
         productPrices[101] = 500;
         productPrices[102] = 300;
         productPrices[103] = 200;
@@ -27,7 +27,7 @@ contract CustomToken is ERC20, Ownable {
     }
 
     function displayProducts() external pure returns (string memory) {
-        string memory saleOptions = "Available products: {101} Laptop (500) {102} Smartphone (300) {103} Headphones (200) {104} Charger (100)";
+        string memory saleOptions = "Available products: {101} Phasmophobia (500) {102} Rust (300) {103} Bodycam (200) {104} Palworld (100)";
         return saleOptions;
     }
 
